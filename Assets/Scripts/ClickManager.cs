@@ -15,7 +15,8 @@ public class ClickManager : MonoBehaviour {
 		mapChunkSize = MapGenerator.mapChunkSize - 1;
 	}
 	
-	void Update () {
+	void Update ()
+	{
 		if (Input.GetMouseButtonDown (0)) {
 			Ray ray = camera.ScreenPointToRay (Input.mousePosition);
 			Debug.DrawRay (ray.origin, ray.direction * 50, Color.yellow);
@@ -25,22 +26,29 @@ public class ClickManager : MonoBehaviour {
 			if (Physics.Raycast (ray, out hit)) {
 				clickedMarker.transform.position = hit.point;
 
-				Vector2 tile = TileFromWorldPoint(hit.point);
-				Vector2 chunkCord = ChunkCordFromWorldPoint(hit.point);
-				GameObject chunk = ChunkFromChunkCord(chunkCord);
+				Vector2 tile = TileFromWorldPoint (hit.point);
+				Vector2 chunkCord = ChunkCordFromWorldPoint (hit.point);
+				GameObject chunk = ChunkFromChunkCord (chunkCord);
 
-				PlaceGameObjectAtTileInChunk(building, tile, chunk, chunkCord);
-				EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find("Map Generator").GetComponent<EndlessTerrain>().terrainChunkDictionary[chunkCord];
-				terrainChunk.modifiedTerrainPoints.Add(new Vector2(5,20));
-				terrainChunk.UpdateModifiedVerticies();
+				PlaceGameObjectAtTileInChunk (building, tile, chunk, chunkCord);
+				EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
+				Vector2 vertexCords = VertexCordFromTileCord (tile);
+				terrainChunk.modifiedTerrainPoints.Add (vertexCords);
+			   	terrainChunk.UpdateModifiedVerticies();
 			}
 		}
 	}
 
+	Vector2 VertexCordFromTileCord (Vector2 tileCord)
+	{
+		Vector2 newCords = new Vector2(tileCord.x, mapChunkSize - tileCord.y);
+		return newCords;
+	}
+
 	public Vector2 ChunkCordFromWorldPoint (Vector3 point) {
 		Vector2 point2D = new Vector2(Mathf.RoundToInt(point.x), Mathf.RoundToInt(point.z));
-		print("Rounded Point: " + point2D);
-		print("World Point: " + point);
+//		print("Rounded Point: " + point2D);
+//		print("World Point: " + point);
 		Vector2 chunkCord = new Vector2(Mathf.FloorToInt(point2D.x / mapChunkSize), Mathf.FloorToInt(point2D.y / mapChunkSize));
 		return chunkCord;
 	}
@@ -53,7 +61,7 @@ public class ClickManager : MonoBehaviour {
 
 		Vector3 pointToTestFrom = new Vector3(chunkCord.x * mapChunkSize, 0f, chunkCord.y * mapChunkSize);
 		pointToTestFrom = new Vector3(pointToTestFrom.x + (mapChunkSize / 2), 0f, pointToTestFrom.z + (mapChunkSize / 2));
-		print("PTTF: " + pointToTestFrom);
+//		print("PTTF: " + pointToTestFrom);
 
         foreach (GameObject go in chunks) {
             Vector3 diff = go.transform.position - pointToTestFrom;
@@ -91,7 +99,7 @@ public class ClickManager : MonoBehaviour {
 
 		float height = hit.point.y;
 		Vector3 position = new Vector3(position2D.x, height, position2D.y);
-		print ("Spawn Position: " + position);
+//		print ("Spawn Position: " + position);
 		GameObject placedObject = GameObject.Instantiate(gameObject, position, Quaternion.identity, chunk.transform);
 	}
 }
