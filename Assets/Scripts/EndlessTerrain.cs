@@ -82,7 +82,7 @@ public class EndlessTerrain : MonoBehaviour {
 		LODMesh[] lodMeshes;
 		LODMesh collisionLODMesh;
 
-		public List<Vector2> modifiedTerrainPoints = new List<Vector2>();
+		public List<Vector3> modifiedTerrainPoints = new List<Vector3>();
 
 		MapData mapData;
 		bool mapDataReceived;
@@ -122,8 +122,8 @@ public class EndlessTerrain : MonoBehaviour {
 			if (modifiedTerrainPoints.Count != 0) {
 //				print(modifiedTerrainPoints.Count);
 				for (int i = 0; i < modifiedTerrainPoints.Count; i++) {
-					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].y);
-					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = 0.7f;
+					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].z);
+					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = modifiedTerrainPoints[i].y;
 				}
 
 //				string temp = "";
@@ -149,14 +149,14 @@ public class EndlessTerrain : MonoBehaviour {
 			UpdateTerrainChunk ();
 		}
 
-		int timesRun = 0; // temp
+		public float GetVertexHeight (int index) {
+			return lodMeshes[lodIndex].GetVertexHeight(index);
+		}
 
 		public void UpdateTerrainChunk() {
 //			mapGenerator.RequestMapData(position, OnMapDataReceived, modifiedTerrainPoints);
 
 			if (mapDataReceived) {
-//				print("Times Run: " + timesRun);
-				timesRun++;
 
 				float viewerDstFromNearestEdge = Mathf.Sqrt (bounds.SqrDistance (viewerPosition));
 				bool visible = viewerDstFromNearestEdge <= maxViewDst;
@@ -182,12 +182,12 @@ public class EndlessTerrain : MonoBehaviour {
 						previousLODIndex = lodIndex;
 						meshFilter.mesh = lodMesh.mesh;
 						meshCollider.sharedMesh = collisionLODMesh.mesh;
-						print("Set Mesh");
+//						print("Set Mesh");
 					} else
 					if (!lodMesh.hasRequestedMesh) {
 						lodMesh.RequestMesh (mapData);
 						collisionLODMesh.RequestMesh (mapData);
-						print("Requested Mesh");
+//						print("Requested Mesh");
 					} 
 
 //					}
@@ -236,7 +236,14 @@ public class EndlessTerrain : MonoBehaviour {
 			mesh = meshData.CreateMesh (needNewMesh, mesh);
 			hasMesh = true;
 
+//			print(GetVertexHeight(10));
+
 			updateCallback ();
+		}
+
+		public float GetVertexHeight (int vertexIndex)
+		{
+			return mesh.vertices[vertexIndex].y;
 		}
 
 		public void RequestMesh(MapData mapData) {

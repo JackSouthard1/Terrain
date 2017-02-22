@@ -73,7 +73,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	public void RequestMapData(Vector2 centre, Action<MapData> callback, List<Vector2> modifiedTerrainPoints = null) {
+	public void RequestMapData(Vector2 centre, Action<MapData> callback, List<Vector3> modifiedTerrainPoints = null) {
 		ThreadStart threadStart = delegate {
 			MapDataThread (centre, callback, modifiedTerrainPoints);
 		};
@@ -81,7 +81,7 @@ public class MapGenerator : MonoBehaviour {
 		new Thread (threadStart).Start ();
 	}
 
-	void MapDataThread(Vector2 centre, Action<MapData> callback, List<Vector2> modifiedTerrainPoints = null) {
+	void MapDataThread(Vector2 centre, Action<MapData> callback, List<Vector3> modifiedTerrainPoints = null) {
 		MapData mapData = GenerateMapData (centre, modifiedTerrainPoints);
 		lock (mapDataThreadInfoQueue) {
 			mapDataThreadInfoQueue.Enqueue (new MapThreadInfo<MapData> (callback, mapData));
@@ -123,7 +123,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	MapData GenerateMapData (Vector2 centre, List<Vector2> modifiedTerrainPoints = null)
+	MapData GenerateMapData (Vector2 centre, List<Vector3> modifiedTerrainPoints = null)
 	{
 		float[,] noiseMap = Noise.GenerateNoiseMap (mapChunkSize + 2, mapChunkSize + 2, seed, noiseScale, octaves, persistance, lacunarity, centre + offset, normalizeMode);
 

@@ -32,7 +32,7 @@ public class ClickManager : MonoBehaviour {
 
 				ModifyPointsFromWorldPointArray(WorldPointsFromWorldPointAndSize(hit.point, 2));
 
-				PlaceGameObjectAtTileInChunk (building, tile, chunk, chunkCord);
+//				PlaceGameObjectAtTileInChunk (building, tile, chunk, chunkCord);
 			}
 		}
 	}
@@ -62,22 +62,111 @@ public class ClickManager : MonoBehaviour {
 
 	void ModifyPointsFromWorldPointArray (Vector3[] worldPoints)
 	{
+		EndlessTerrain endlessTerrainScript = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ();
+
+		List<EndlessTerrain.TerrainChunk> totalTerrainChunks = new List<EndlessTerrain.TerrainChunk> ();
+		EndlessTerrain.TerrainChunk[] terrainChunks = new EndlessTerrain.TerrainChunk[worldPoints.Length];
+
+		Vector2[] vertexCords2D = new Vector2[worldPoints.Length];
+		Vector3[] vertexCords3D = new Vector3[worldPoints.Length];
+		float[] vertexCordHeights = new float[worldPoints.Length];
+		float averageVertexHeight = 0;
+
 		for (int i = 0; i < worldPoints.Length; i++) {
-			Vector3 hitPoint = worldPoints[i];
-			Vector2 tile = TileFromWorldPoint (hitPoint);
-			Vector2 chunkCord = ChunkCordFromWorldPoint (hitPoint);
-			GameObject chunk = ChunkFromChunkCord (chunkCord);
-			EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
-			Vector2 vertexCords = VertexCordFromTileCord (tile);
-			terrainChunk.modifiedTerrainPoints.Add (vertexCords);
-			terrainChunk.UpdateModifiedVerticies();
+			Vector3 worldPoint = worldPoints [i];
+			Vector2 tile = TileFromWorldPoint (worldPoint);
+			Vector2 chunkCord = ChunkCordFromWorldPoint (worldPoint);
+
+			EndlessTerrain.TerrainChunk terrainChunk = endlessTerrainScript.terrainChunkDictionary [chunkCord];
+			terrainChunks[i] = terrainChunk;
+			if (!totalTerrainChunks.Contains (terrainChunk)) {
+				totalTerrainChunks.Add (terrainChunk);
+			}
+
+			vertexCords2D[i] = VertexCordFromTileCord(tile);
+
+			vertexCordHeights[i] = VertexHeightFromChunkAndIndex(terrainChunk, IndexFromTile(tile));
 		}
+
+		// calculate average height of vertexes
+		float averageHeight = AverageHeight(vertexCordHeights);
+		float heightRatio = averageHeight / 25;
+
+		for (int n = 0; n < worldPoints.Length; n++) {
+			vertexCords3D[n] = new Vector3 (vertexCords2D[n].x, heightRatio, vertexCords2D[n].y);
+		}
+
+		// move verticies
+		for (int o = 0; o < worldPoints.Length; o++) {
+			terrainChunks[o].modifiedTerrainPoints.Add(vertexCords3D[o]);
+		}
+
+		// Update all terrain chunks that are effected
+		for (int e = 0; e < totalTerrainChunks.Count; e++) {
+			totalTerrainChunks[e].UpdateModifiedVerticies();
+		}
+
+
+
+
+//		for (int i = 0; i < worldPoints.Length; i++) {
+//			Vector3 hitPoint = worldPoints[i];
+//			Vector2 tile = TileFromWorldPoint (hitPoint);
+//			Vector2 chunkCord = ChunkCordFromWorldPoint (hitPoint);
+//			GameObject chunk = ChunkFromChunkCord (chunkCord);
+//
+//			EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
+//			Vector2 vertexCords2D = VertexCordFromTileCord (tile);
+//		}
+//
+//		float[] heights = new float[worldPoints.Length];
+//
+//		for (int j = 0; j < heights.Length; j++) {
+//			heights[j] = worldPoints[j].y;
+//		}
+//
+//		float averageHeight = AverageHeight(heights);
+//		print("Avg: " + averageHeight);
+//
+//		for (int o = 0; o < worldPoints.Length; o++) {
+//			float vertexHeight = VertexHeightFromChunkAndIndex(terrainChunk, IndexFromTile(tile));
+//
+//			float heightRatio = vertexHeight;
+//			Vector3 vertexCords3D = new Vector3 (vertexCords2D.x, vertexHeight, vertexCords2D.y);
+//
+//			terrainChunk.modifiedTerrainPoints.Add (vertexCords3D);
+//			terrainChunk.UpdateModifiedVerticies();
+//		}
+	}
+
+	float AverageHeight (float[] heights)
+	{
+		float average = 0;
+		float sum = 0;
+
+		for(int i = 0; i < heights.Length; i++) {
+    		sum += heights[i];
+		}
+		average = sum / heights.Length;
+
+		return average;
 	}
 
 	Vector2 VertexCordFromTileCord (Vector2 tileCord)
 	{
 		Vector2 newCords = new Vector2(tileCord.x, mapChunkSize - tileCord.y);
 		return newCords;
+	}
+
+	float VertexHeightFromChunkAndIndex (EndlessTerrain.TerrainChunk terrainChunk, int index) {
+		return terrainChunk.GetVertexHeight(index);
+	}
+//
+	int IndexFromTile (Vector2 tile) {
+		Vector2 invertedTile = new Vector2 ((int)tile.x, (int)(mapChunkSize - tile.y));
+		int index = Mathf.RoundToInt(((invertedTile.y - 1) * mapChunkSize) + invertedTile.x);
+
+		return index * 6; // bc there are 6 vertices per slot
 	}
 
 	public Vector2 ChunkCordFromWorldPoint (Vector3 point) {
