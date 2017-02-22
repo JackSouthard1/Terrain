@@ -101,10 +101,10 @@ public class MeshData {
 		}
 	}
 
-	public void MoveVertex ()
-	{
-
-	}
+//	public void MoveVertex (float newHieght, int vertexIndex)
+//	{
+//		vertices[vertexIndex].y = newHieght;
+//	}
 
 	public void AddTriangle(int a, int b, int c) {
 		if (a < 0 || b < 0 || c < 0) {

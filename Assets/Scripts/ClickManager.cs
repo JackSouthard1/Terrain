@@ -7,14 +7,12 @@ public class ClickManager : MonoBehaviour {
 	Camera camera;
 	public GameObject clickedMarker;
 	float mapChunkSize;
-	float chunkSizeInWorldUnits;
 
 	public GameObject building;
 
 	void Start () {
 		camera = FindObjectOfType<Camera>();
 		mapChunkSize = MapGenerator.mapChunkSize - 1;
-		chunkSizeInWorldUnits = (mapChunkSize) / 2;
 	}
 	
 	void Update () {
@@ -30,9 +28,11 @@ public class ClickManager : MonoBehaviour {
 				Vector2 tile = TileFromWorldPoint(hit.point);
 				Vector2 chunkCord = ChunkCordFromWorldPoint(hit.point);
 				GameObject chunk = ChunkFromChunkCord(chunkCord);
-//				print("PIC: " + TileFromChunkCordAndWorldPoint (hit.point));
 
 				PlaceGameObjectAtTileInChunk(building, tile, chunk, chunkCord);
+				EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find("Map Generator").GetComponent<EndlessTerrain>().terrainChunkDictionary[chunkCord];
+				terrainChunk.modifiedTerrainPoints.Add(new Vector2(5,20));
+				terrainChunk.UpdateModifiedVerticies();
 			}
 		}
 	}
@@ -41,7 +41,7 @@ public class ClickManager : MonoBehaviour {
 		Vector2 point2D = new Vector2(Mathf.RoundToInt(point.x), Mathf.RoundToInt(point.z));
 		print("Rounded Point: " + point2D);
 		print("World Point: " + point);
-		Vector2 chunkCord = new Vector2(Mathf.FloorToInt(point2D.x / chunkSizeInWorldUnits), Mathf.FloorToInt(point2D.y / chunkSizeInWorldUnits));
+		Vector2 chunkCord = new Vector2(Mathf.FloorToInt(point2D.x / mapChunkSize), Mathf.FloorToInt(point2D.y / mapChunkSize));
 		return chunkCord;
 	}
 
@@ -51,8 +51,8 @@ public class ClickManager : MonoBehaviour {
 		GameObject closest = null;
         float distance = Mathf.Infinity;
 
-		Vector3 pointToTestFrom = new Vector3(chunkCord.x * chunkSizeInWorldUnits, 0f, chunkCord.y * chunkSizeInWorldUnits);
-		pointToTestFrom = new Vector3(pointToTestFrom.x + (chunkSizeInWorldUnits / 2), 0f, pointToTestFrom.z + (chunkSizeInWorldUnits / 2));
+		Vector3 pointToTestFrom = new Vector3(chunkCord.x * mapChunkSize, 0f, chunkCord.y * mapChunkSize);
+		pointToTestFrom = new Vector3(pointToTestFrom.x + (mapChunkSize / 2), 0f, pointToTestFrom.z + (mapChunkSize / 2));
 		print("PTTF: " + pointToTestFrom);
 
         foreach (GameObject go in chunks) {
@@ -69,14 +69,14 @@ public class ClickManager : MonoBehaviour {
 	public Vector2 TileFromWorldPoint (Vector3 point)
 	{
 		Vector2 point2D = new Vector2 (Mathf.RoundToInt (point.x), Mathf.RoundToInt (point.z));
-		float pointX = point2D.x % chunkSizeInWorldUnits;
-		float pointY = point2D.y % chunkSizeInWorldUnits;
+		float pointX = point2D.x % mapChunkSize;
+		float pointY = point2D.y % mapChunkSize;
 
 		if (pointX < 0) {
-			pointX = chunkSizeInWorldUnits + pointX;
+			pointX = mapChunkSize + pointX;
 		}
 		if (pointY < 0) {
-			pointY = chunkSizeInWorldUnits + pointY;
+			pointY = mapChunkSize + pointY;
 		}
 
 		Vector2 pointInChunk = new Vector2(pointX, pointY);
@@ -84,7 +84,7 @@ public class ClickManager : MonoBehaviour {
 	}
 
 	public void PlaceGameObjectAtTileInChunk (GameObject gameObject, Vector2 tile, GameObject chunk, Vector2 chunkCord) {
-		Vector2 position2D = new Vector2(chunkCord.x * chunkSizeInWorldUnits + tile.x, chunkCord.y * chunkSizeInWorldUnits + tile.y);
+		Vector2 position2D = new Vector2(chunkCord.x * mapChunkSize + tile.x, chunkCord.y * mapChunkSize + tile.y);
 
 		RaycastHit hit;
 		Physics.Raycast(Vector3.down, new Vector3(position2D.x, 100f, position2D.y), out hit);

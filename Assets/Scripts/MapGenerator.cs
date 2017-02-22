@@ -73,16 +73,16 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	public void RequestMapData(Vector2 centre, Action<MapData> callback) {
+	public void RequestMapData(Vector2 centre, Action<MapData> callback, List<Vector2> modifiedTerrainPoints = null) {
 		ThreadStart threadStart = delegate {
-			MapDataThread (centre, callback);
+			MapDataThread (centre, callback, modifiedTerrainPoints);
 		};
 
 		new Thread (threadStart).Start ();
 	}
 
-	void MapDataThread(Vector2 centre, Action<MapData> callback) {
-		MapData mapData = GenerateMapData (centre);
+	void MapDataThread(Vector2 centre, Action<MapData> callback, List<Vector2> modifiedTerrainPoints = null) {
+		MapData mapData = GenerateMapData (centre, modifiedTerrainPoints);
 		lock (mapDataThreadInfoQueue) {
 			mapDataThreadInfoQueue.Enqueue (new MapThreadInfo<MapData> (callback, mapData));
 		}
@@ -103,6 +103,10 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
+	void  FlattenTerrain () {
+		
+	}
+
 	void Update() {
 		if (mapDataThreadInfoQueue.Count > 0) {
 			for (int i = 0; i < mapDataThreadInfoQueue.Count; i++) {
@@ -119,7 +123,8 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	MapData GenerateMapData(Vector2 centre) {
+	MapData GenerateMapData (Vector2 centre, List<Vector2> modifiedTerrainPoints = null)
+	{
 		float[,] noiseMap = Noise.GenerateNoiseMap (mapChunkSize + 2, mapChunkSize + 2, seed, noiseScale, octaves, persistance, lacunarity, centre + offset, normalizeMode);
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
@@ -176,7 +181,7 @@ public struct TerrainType {
 }
 
 public struct MapData {
-	public readonly float[,] heightMap;
+	public float[,] heightMap;
 	public readonly Color[] colourMap;
 
 	public MapData (float[,] heightMap, Color[] colourMap)
