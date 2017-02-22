@@ -200,8 +200,11 @@ public class MeshData {
 		uvs = flatShadedUvs;
 	}
 
-	public Mesh CreateMesh() {
-		Mesh mesh = new Mesh ();
+	public Mesh CreateMesh (bool needNewMesh, Mesh mesh = null)
+	{
+		if (needNewMesh) {
+			mesh = new Mesh ();
+		}
 		mesh.vertices = vertices;
 		mesh.triangles = triangles;
 		mesh.uv = uvs;

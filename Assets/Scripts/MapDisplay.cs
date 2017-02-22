@@ -13,7 +13,7 @@ public class MapDisplay : MonoBehaviour {
 	}
 
 	public void DrawMesh(MeshData meshData, Texture2D texture) {
-		meshFilter.sharedMesh = meshData.CreateMesh ();
+		meshFilter.sharedMesh = meshData.CreateMesh (true);
 		meshRenderer.sharedMaterial.mainTexture = texture;
 	}
 

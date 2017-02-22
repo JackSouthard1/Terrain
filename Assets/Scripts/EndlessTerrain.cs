@@ -123,7 +123,7 @@ public class EndlessTerrain : MonoBehaviour {
 //				print(modifiedTerrainPoints.Count);
 				for (int i = 0; i < modifiedTerrainPoints.Count - 1; i++) {
 					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].y);
-					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = 0f;
+					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = 1f;
 				}
 
 //				string temp = "";
@@ -132,8 +132,8 @@ public class EndlessTerrain : MonoBehaviour {
 //			    	temp += v2.ToString(); //maybe also + '\n' to put them on their own line.
 //			   	}
 //			   	print(temp);
-				lodMeshes [lodIndex].hasRequestedUpdatedMesh = false;
-				lodMeshes [lodIndex].hasUpdatedMesh = false;
+				lodMeshes[lodIndex].hasRequestedMesh = false;
+				lodMeshes[lodIndex].hasRequestedMesh = false;
 
 				UpdateTerrainChunk();
 			}
@@ -149,10 +149,15 @@ public class EndlessTerrain : MonoBehaviour {
 			UpdateTerrainChunk ();
 		}
 
+		int timesRun = 0; // temp
+
 		public void UpdateTerrainChunk() {
 //			mapGenerator.RequestMapData(position, OnMapDataReceived, modifiedTerrainPoints);
 
 			if (mapDataReceived) {
+//				print("Times Run: " + timesRun);
+				timesRun++;
+
 				float viewerDstFromNearestEdge = Mathf.Sqrt (bounds.SqrDistance (viewerPosition));
 				bool visible = viewerDstFromNearestEdge <= maxViewDst;
 
@@ -171,24 +176,23 @@ public class EndlessTerrain : MonoBehaviour {
 
 					LODMesh lodMesh = lodMeshes [lodIndex];
 
-					if (lodIndex != previousLODIndex || lodMesh.hasUpdatedMesh == false) {
-						if (!lodMesh.hasRequestedFirstMesh || !lodMesh.hasRequestedUpdatedMesh) {
-							lodMesh.RequestMesh (mapData);
-							print("1");
-						}
-						if (lodMesh.hasFirstMesh && lodMesh.hasUpdatedMesh) {
+//					if (lodIndex != previousLODIndex) { // || lodMesh.hasUpdatedMesh == false
+					if (!lodMesh.hasRequestedMesh) { //  || !lodMesh.hasRequestedUpdatedMesh
+						lodMesh.RequestMesh (mapData);
+						print("Requested Mesh");
+					} else if (lodMesh.hasMesh) { //  && lodMesh.hasUpdatedMesh
 //							print(lodMesh.hasUpdatedMesh);
-							previousLODIndex = lodIndex;
-							meshFilter.mesh = lodMesh.mesh;
-							print("2");
-						}
-
+						previousLODIndex = lodIndex;
+						meshFilter.mesh = lodMesh.mesh;
+						print("Set Mesh");
 					}
 
+//					}
+
 					if (lodIndex == 0) {
-						if (collisionLODMesh.hasFirstMesh) {
+						if (collisionLODMesh.hasMesh) {
 							meshCollider.sharedMesh = collisionLODMesh.mesh;
-						} else if (!collisionLODMesh.hasRequestedFirstMesh) {
+						} else if (!collisionLODMesh.hasRequestedMesh) {
 							collisionLODMesh.RequestMesh (mapData);
 						}
 					}
@@ -218,10 +222,9 @@ public class EndlessTerrain : MonoBehaviour {
 	class LODMesh {
 
 		public Mesh mesh;
-		public bool hasRequestedFirstMesh;
-		public bool hasFirstMesh;
-		public bool hasRequestedUpdatedMesh;
-		public bool hasUpdatedMesh;
+		public bool hasRequestedMesh;
+		public bool hasMesh;
+		public bool needNewMesh = true;
 		int lod;
 		System.Action updateCallback;
 
@@ -230,18 +233,16 @@ public class EndlessTerrain : MonoBehaviour {
 			this.updateCallback = updateCallback;
 		}
 
-		void OnMeshDataReceived(MeshData meshData) {
-			mesh = meshData.CreateMesh ();
-			hasFirstMesh = true;
-			hasUpdatedMesh = true;
-			print("Got Updated Mesh: " + hasUpdatedMesh);
+		void OnMeshDataReceived (MeshData meshData)
+		{
+			mesh = meshData.CreateMesh (needNewMesh, mesh);
+			hasMesh = true;
 
 			updateCallback ();
 		}
 
 		public void RequestMesh(MapData mapData) {
-			hasRequestedFirstMesh = true;
-			hasRequestedUpdatedMesh = true;
+			hasRequestedMesh = true;
 			mapGenerator.RequestMeshData (mapData, lod, OnMeshDataReceived);
 		}
 
