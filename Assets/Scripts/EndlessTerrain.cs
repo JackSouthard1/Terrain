@@ -121,9 +121,9 @@ public class EndlessTerrain : MonoBehaviour {
 		public void UpdateModifiedVerticies () {
 			if (modifiedTerrainPoints.Count != 0) {
 //				print(modifiedTerrainPoints.Count);
-				for (int i = 0; i < modifiedTerrainPoints.Count - 1; i++) {
+				for (int i = 0; i < modifiedTerrainPoints.Count; i++) {
 					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].y);
-					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = 1f;
+					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = 0.7f;
 				}
 
 //				string temp = "";
@@ -132,7 +132,7 @@ public class EndlessTerrain : MonoBehaviour {
 //			    	temp += v2.ToString(); //maybe also + '\n' to put them on their own line.
 //			   	}
 //			   	print(temp);
-				lodMeshes[lodIndex].hasRequestedMesh = false;
+				lodMeshes[lodIndex].hasMesh = false;
 				lodMeshes[lodIndex].hasRequestedMesh = false;
 
 				UpdateTerrainChunk();
@@ -177,25 +177,28 @@ public class EndlessTerrain : MonoBehaviour {
 					LODMesh lodMesh = lodMeshes [lodIndex];
 
 //					if (lodIndex != previousLODIndex) { // || lodMesh.hasUpdatedMesh == false
-					if (!lodMesh.hasRequestedMesh) { //  || !lodMesh.hasRequestedUpdatedMesh
-						lodMesh.RequestMesh (mapData);
-						print("Requested Mesh");
-					} else if (lodMesh.hasMesh) { //  && lodMesh.hasUpdatedMesh
+					if (lodMesh.hasMesh) {
 //							print(lodMesh.hasUpdatedMesh);
 						previousLODIndex = lodIndex;
 						meshFilter.mesh = lodMesh.mesh;
+						meshCollider.sharedMesh = collisionLODMesh.mesh;
 						print("Set Mesh");
-					}
+					} else
+					if (!lodMesh.hasRequestedMesh) {
+						lodMesh.RequestMesh (mapData);
+						collisionLODMesh.RequestMesh (mapData);
+						print("Requested Mesh");
+					} 
 
 //					}
 
-					if (lodIndex == 0) {
-						if (collisionLODMesh.hasMesh) {
-							meshCollider.sharedMesh = collisionLODMesh.mesh;
-						} else if (!collisionLODMesh.hasRequestedMesh) {
-							collisionLODMesh.RequestMesh (mapData);
-						}
-					}
+//					if (lodIndex == 0) {
+//						if (collisionLODMesh.hasMesh) {
+//							meshCollider.sharedMesh = collisionLODMesh.mesh;
+//						} else if (!collisionLODMesh.hasRequestedMesh) {
+//							collisionLODMesh.RequestMesh (mapData);
+//						}
+//					}
 
 					terrainChunksVisibleLastUpdate.Add (this);
 				}
@@ -203,11 +206,6 @@ public class EndlessTerrain : MonoBehaviour {
 				SetVisible (visible);
 			}
 		}
-
-//		void UpdateMesh (LODMesh lodMesh) {
-//			lodMesh.RequestMesh (mapData);
-//			meshFilter.mesh = lodMesh.mesh; // fix so its not in two places
-//		}
 
 		public void SetVisible(bool visible) {
 			meshObject.SetActive (visible);

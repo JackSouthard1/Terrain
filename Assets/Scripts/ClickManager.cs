@@ -30,12 +30,47 @@ public class ClickManager : MonoBehaviour {
 				Vector2 chunkCord = ChunkCordFromWorldPoint (hit.point);
 				GameObject chunk = ChunkFromChunkCord (chunkCord);
 
+				ModifyPointsFromWorldPointArray(WorldPointsFromWorldPointAndSize(hit.point, 2));
+
 				PlaceGameObjectAtTileInChunk (building, tile, chunk, chunkCord);
-				EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
-				Vector2 vertexCords = VertexCordFromTileCord (tile);
-				terrainChunk.modifiedTerrainPoints.Add (vertexCords);
-			   	terrainChunk.UpdateModifiedVerticies();
 			}
+		}
+	}
+
+	Vector3[] WorldPointsFromWorldPointAndSize (Vector3 initialWorldPoint, int size)
+	{
+		Vector3[] worldPoints = new Vector3[size * size];
+
+		Vector3 rInitialWorldPoint = new Vector3(Mathf.RoundToInt(initialWorldPoint.x), initialWorldPoint.y, Mathf.RoundToInt(initialWorldPoint.z));
+
+		worldPoints[0] = rInitialWorldPoint;
+		worldPoints[1] = new Vector3(rInitialWorldPoint.x + 1, rInitialWorldPoint.y, rInitialWorldPoint.z);
+		worldPoints[2] = new Vector3(rInitialWorldPoint.x, rInitialWorldPoint.y, rInitialWorldPoint.z + 1);
+		worldPoints[3] = new Vector3(rInitialWorldPoint.x + 1, rInitialWorldPoint.y, rInitialWorldPoint.z + 1);
+
+		return worldPoints;
+
+
+//		// Get all points on x axis
+//		int arrayIndex = 0;
+//
+//		for (int i = 0; i < size; i++) {
+//			
+//		}
+
+	}
+
+	void ModifyPointsFromWorldPointArray (Vector3[] worldPoints)
+	{
+		for (int i = 0; i < worldPoints.Length; i++) {
+			Vector3 hitPoint = worldPoints[i];
+			Vector2 tile = TileFromWorldPoint (hitPoint);
+			Vector2 chunkCord = ChunkCordFromWorldPoint (hitPoint);
+			GameObject chunk = ChunkFromChunkCord (chunkCord);
+			EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
+			Vector2 vertexCords = VertexCordFromTileCord (tile);
+			terrainChunk.modifiedTerrainPoints.Add (vertexCords);
+			terrainChunk.UpdateModifiedVerticies();
 		}
 	}
 
