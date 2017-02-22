@@ -90,7 +90,7 @@ public class ClickManager : MonoBehaviour {
 
 		// calculate average height of vertexes
 		float averageHeight = AverageHeight(vertexCordHeights);
-		float heightRatio = averageHeight / 25;
+		float heightRatio = averageHeight / 30; // TODO MAGIC NUMBER ##
 
 		for (int n = 0; n < worldPoints.Length; n++) {
 			vertexCords3D[n] = new Vector3 (vertexCords2D[n].x, heightRatio, vertexCords2D[n].y);
@@ -105,38 +105,6 @@ public class ClickManager : MonoBehaviour {
 		for (int e = 0; e < totalTerrainChunks.Count; e++) {
 			totalTerrainChunks[e].UpdateModifiedVerticies();
 		}
-
-
-
-
-//		for (int i = 0; i < worldPoints.Length; i++) {
-//			Vector3 hitPoint = worldPoints[i];
-//			Vector2 tile = TileFromWorldPoint (hitPoint);
-//			Vector2 chunkCord = ChunkCordFromWorldPoint (hitPoint);
-//			GameObject chunk = ChunkFromChunkCord (chunkCord);
-//
-//			EndlessTerrain.TerrainChunk terrainChunk = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ().terrainChunkDictionary [chunkCord];
-//			Vector2 vertexCords2D = VertexCordFromTileCord (tile);
-//		}
-//
-//		float[] heights = new float[worldPoints.Length];
-//
-//		for (int j = 0; j < heights.Length; j++) {
-//			heights[j] = worldPoints[j].y;
-//		}
-//
-//		float averageHeight = AverageHeight(heights);
-//		print("Avg: " + averageHeight);
-//
-//		for (int o = 0; o < worldPoints.Length; o++) {
-//			float vertexHeight = VertexHeightFromChunkAndIndex(terrainChunk, IndexFromTile(tile));
-//
-//			float heightRatio = vertexHeight;
-//			Vector3 vertexCords3D = new Vector3 (vertexCords2D.x, vertexHeight, vertexCords2D.y);
-//
-//			terrainChunk.modifiedTerrainPoints.Add (vertexCords3D);
-//			terrainChunk.UpdateModifiedVerticies();
-//		}
 	}
 
 	float AverageHeight (float[] heights)
@@ -224,6 +192,6 @@ public class ClickManager : MonoBehaviour {
 		float height = hit.point.y;
 		Vector3 position = new Vector3(position2D.x, height, position2D.y);
 //		print ("Spawn Position: " + position);
-		GameObject placedObject = GameObject.Instantiate(gameObject, position, Quaternion.identity, chunk.transform);
+		GameObject.Instantiate(gameObject, position, Quaternion.identity, chunk.transform);
 	}
 }

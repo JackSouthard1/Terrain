@@ -42,7 +42,7 @@ public static class MeshGenerator {
 			for (int x = 0; x < borderedSize; x += meshSimplificationIncrement) {
 				int vertexIndex = vertexIndicesMap [x, y];
 				Vector2 percent = new Vector2 ((x-meshSimplificationIncrement) / (float)meshSize, (y-meshSimplificationIncrement) / (float)meshSize);
-				float height = heightCurve.Evaluate (heightMap [x, y]) * heightMultiplier;
+				float height = heightMap [x, y] * heightMultiplier; //heightCurve.Evaluate (heightMap [x, y]) // TODO
 				Vector3 vertexPosition = new Vector3 (topLeftX + percent.x * meshSizeUnsimplified, height, topLeftZ - percent.y * meshSizeUnsimplified);
 
 				meshData.AddVertex (vertexPosition, percent, vertexIndex);
@@ -161,7 +161,6 @@ public class MeshData {
 		}
 
 		return vertexNormals;
-
 	}
 
 	Vector3 SurfaceNormalFromIndices(int indexA, int indexB, int indexC) {
