@@ -123,7 +123,7 @@ public class EndlessTerrain : MonoBehaviour {
 //				print(modifiedTerrainPoints.Count);
 				for (int i = 0; i < modifiedTerrainPoints.Count; i++) {
 					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].z);
-					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = modifiedTerrainPoints[i].y;
+					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = modifiedTerrainPoints[i].y / mapGenerator.meshHeightMultiplier; //  * mapGenerator.meshHeightCurve.Evaluate(modifiedTerrainPoints[i].y
 				}
 
 //				string temp = "";
