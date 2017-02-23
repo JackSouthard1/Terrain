@@ -33,7 +33,7 @@ public class ClickManager : MonoBehaviour {
 				Vector2 chunkCord = ChunkCordFromWorldPoint (hit.point);
 				GameObject chunk = ChunkFromChunkCord (chunkCord);
 
-				ModifyPointsFromWorldPointArray(WorldPointsFromWorldPointAndSize(hit.point, 2));
+				FlattenPointsFromWorldPointArray(WorldPointsFromWorldPointAndSize(hit.point, 10));
 
 //				PlaceGameObjectAtTileInChunk (building, tile, chunk, chunkCord);
 			}
@@ -46,24 +46,19 @@ public class ClickManager : MonoBehaviour {
 
 		Vector3 rInitialWorldPoint = new Vector3(Mathf.RoundToInt(initialWorldPoint.x), initialWorldPoint.y, Mathf.RoundToInt(initialWorldPoint.z));
 
-		worldPoints[0] = rInitialWorldPoint;
-		worldPoints[1] = new Vector3(rInitialWorldPoint.x + 1, rInitialWorldPoint.y, rInitialWorldPoint.z);
-		worldPoints[2] = new Vector3(rInitialWorldPoint.x, rInitialWorldPoint.y, rInitialWorldPoint.z + 1);
-		worldPoints[3] = new Vector3(rInitialWorldPoint.x + 1, rInitialWorldPoint.y, rInitialWorldPoint.z + 1);
+		int index = 0;
+
+		for (int collumn = 0; collumn < size; collumn++) {
+			for (int row = 0; row < size; row++) {
+				worldPoints[index] = new Vector3(rInitialWorldPoint.x + collumn, rInitialWorldPoint.y, rInitialWorldPoint.z + row);
+				index++;
+			}
+		}
 
 		return worldPoints;
-
-
-//		// Get all points on x axis
-//		int arrayIndex = 0;
-//
-//		for (int i = 0; i < size; i++) {
-//			
-//		}
-
 	}
 
-	void ModifyPointsFromWorldPointArray (Vector3[] worldPoints)
+	void FlattenPointsFromWorldPointArray (Vector3[] worldPoints)
 	{
 		EndlessTerrain endlessTerrainScript = GameObject.Find ("Map Generator").GetComponent<EndlessTerrain> ();
 
