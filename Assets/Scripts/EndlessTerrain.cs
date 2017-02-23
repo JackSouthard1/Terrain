@@ -236,8 +236,6 @@ public class EndlessTerrain : MonoBehaviour {
 			mesh = meshData.CreateMesh (needNewMesh, mesh);
 			hasMesh = true;
 
-//			print(GetVertexHeight(10));
-
 			updateCallback ();
 		}
 

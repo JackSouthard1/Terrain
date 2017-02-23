@@ -8,11 +8,14 @@ public class ClickManager : MonoBehaviour {
 	public GameObject clickedMarker;
 	float mapChunkSize;
 
+	MapGenerator mapGenerator;
+
 	public GameObject building;
 
 	void Start () {
 		camera = FindObjectOfType<Camera>();
 		mapChunkSize = MapGenerator.mapChunkSize - 1;
+		mapGenerator = GameObject.Find("Map Generator").GetComponent<MapGenerator>();
 	}
 	
 	void Update ()
@@ -90,7 +93,7 @@ public class ClickManager : MonoBehaviour {
 
 		// calculate average height of vertexes
 		float averageHeight = AverageHeight(vertexCordHeights);
-		float heightRatio = averageHeight / 30; // TODO MAGIC NUMBER ##
+		float heightRatio = averageHeight / (mapGenerator.meshHeightMultiplier * 1f); // TODO MAGIC NUMBER ##
 
 		for (int n = 0; n < worldPoints.Length; n++) {
 			vertexCords3D[n] = new Vector3 (vertexCords2D[n].x, heightRatio, vertexCords2D[n].y);

@@ -2,6 +2,7 @@
 using System.Collections;
 
 public static class MeshGenerator {
+	
 
 	public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve _heightCurve, int levelOfDetail, bool useFlatShading) {
 		AnimationCurve heightCurve = new AnimationCurve (_heightCurve.keys);
