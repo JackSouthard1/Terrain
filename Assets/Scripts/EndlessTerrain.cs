@@ -18,6 +18,7 @@ public class EndlessTerrain : MonoBehaviour {
 	public static Vector2 viewerPosition;
 	Vector2 viewerPositionOld;
 	static MapGenerator mapGenerator;
+	Landscape landscape;
 	int chunkSize;
 	int chunksVisibleInViewDst;
 
@@ -26,6 +27,7 @@ public class EndlessTerrain : MonoBehaviour {
 
 	void Start() {
 		mapGenerator = FindObjectOfType<MapGenerator> ();
+		landscape = FindObjectOfType<Landscape>();
 
 		maxViewDst = detailLevels [detailLevels.Length - 1].visibleDstThreshold;
 		chunkSize = MapGenerator.mapChunkSize - 1;
@@ -43,7 +45,8 @@ public class EndlessTerrain : MonoBehaviour {
 		}
 	}
 		
-	void UpdateVisibleChunks() {
+	void UpdateVisibleChunks ()
+	{
 
 		for (int i = 0; i < terrainChunksVisibleLastUpdate.Count; i++) {
 			terrainChunksVisibleLastUpdate [i].SetVisible (false);
@@ -55,9 +58,11 @@ public class EndlessTerrain : MonoBehaviour {
 
 		for (int yOffset = -chunksVisibleInViewDst; yOffset <= chunksVisibleInViewDst; yOffset++) {
 			for (int xOffset = -chunksVisibleInViewDst; xOffset <= chunksVisibleInViewDst; xOffset++) {
+				// check to make sure it is not generating a chunk outside of the map size
 				Vector2 viewedChunkCoord = new Vector2 (currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
-
-				if (terrainChunkDictionary.ContainsKey (viewedChunkCoord)) {
+				if (viewedChunkCoord.x < 0 || -viewedChunkCoord.y < 0) {
+				} else if (viewedChunkCoord.x >= landscape.mapSize || -viewedChunkCoord.y >= landscape.mapSize) {
+				} else if (terrainChunkDictionary.ContainsKey (viewedChunkCoord)) {
 					terrainChunkDictionary [viewedChunkCoord].UpdateTerrainChunk ();
 				} else {
 					terrainChunkDictionary.Add (viewedChunkCoord, new TerrainChunk (viewedChunkCoord, chunkSize, detailLevels, transform, mapMaterial));
@@ -82,8 +87,6 @@ public class EndlessTerrain : MonoBehaviour {
 		LODMesh[] lodMeshes;
 		LODMesh collisionLODMesh;
 
-		public List<Vector3> modifiedTerrainPoints = new List<Vector3>();
-
 		MapData mapData;
 		bool mapDataReceived;
 		int previousLODIndex = -1;
@@ -93,7 +96,7 @@ public class EndlessTerrain : MonoBehaviour {
 
 			position = coord * size;
 			bounds = new Bounds(position,Vector2.one * size);
-			Vector3 positionV3 = new Vector3(position.x + (MapGenerator.mapChunkSize / 2),0,position.y + (MapGenerator.mapChunkSize / 2));
+			Vector3 positionV3 = new Vector3(position.x + (MapGenerator.mapChunkSize / 2),0,position.y - (MapGenerator.mapChunkSize / 2));
 
 			meshObject = new GameObject("Terrain Chunk");
 			meshObject.tag = "Chunk";
@@ -115,28 +118,14 @@ public class EndlessTerrain : MonoBehaviour {
 				}
 			}
 
-			mapGenerator.RequestMapData(position, OnMapDataReceived, modifiedTerrainPoints);
+			mapGenerator.RequestMapData(position, OnMapDataReceived);
 		}
 
-		public void UpdateModifiedVerticies () {
-			if (modifiedTerrainPoints.Count != 0) {
-//				print(modifiedTerrainPoints.Count);
-				for (int i = 0; i < modifiedTerrainPoints.Count; i++) {
-					Vector2 pointToModify = new Vector2(modifiedTerrainPoints[i].x, modifiedTerrainPoints[i].z);
-					mapData.heightMap[(int)pointToModify.x, (int)pointToModify.y] = modifiedTerrainPoints[i].y / mapGenerator.meshHeightMultiplier; //  * mapGenerator.meshHeightCurve.Evaluate(modifiedTerrainPoints[i].y
-				}
+		public void UpdateMesh () {
+			lodMeshes[lodIndex].hasMesh = false;
+			lodMeshes[lodIndex].hasRequestedMesh = false;
 
-//				string temp = "";
-//				foreach(Vector2 v2 in modifiedTerrainPoints)
-//			   	{
-//			    	temp += v2.ToString(); //maybe also + '\n' to put them on their own line.
-//			   	}
-//			   	print(temp);
-				lodMeshes[lodIndex].hasMesh = false;
-				lodMeshes[lodIndex].hasRequestedMesh = false;
-
-				UpdateTerrainChunk();
-			}
+			mapGenerator.RequestMapData(position, OnMapDataReceived);
 		}
 
 		void OnMapDataReceived(MapData mapData) {
@@ -149,15 +138,8 @@ public class EndlessTerrain : MonoBehaviour {
 			UpdateTerrainChunk ();
 		}
 
-		public float GetVertexHeight (int index) {
-			return lodMeshes[lodIndex].GetVertexHeight(index);
-		}
-
 		public void UpdateTerrainChunk() {
-//			mapGenerator.RequestMapData(position, OnMapDataReceived, modifiedTerrainPoints);
-
 			if (mapDataReceived) {
-
 				float viewerDstFromNearestEdge = Mathf.Sqrt (bounds.SqrDistance (viewerPosition));
 				bool visible = viewerDstFromNearestEdge <= maxViewDst;
 
@@ -172,13 +154,10 @@ public class EndlessTerrain : MonoBehaviour {
 						}
 					}
 
-//					print("UpdateTerrainChunk Called. LOD Index: " + lodIndex);
-
 					LODMesh lodMesh = lodMeshes [lodIndex];
 
 //					if (lodIndex != previousLODIndex) { // || lodMesh.hasUpdatedMesh == false
 					if (lodMesh.hasMesh) {
-//							print(lodMesh.hasUpdatedMesh);
 						previousLODIndex = lodIndex;
 						meshFilter.mesh = lodMesh.mesh;
 						meshCollider.sharedMesh = collisionLODMesh.mesh;
@@ -234,16 +213,12 @@ public class EndlessTerrain : MonoBehaviour {
 		void OnMeshDataReceived (MeshData meshData)
 		{
 			mesh = meshData.CreateMesh (needNewMesh, mesh);
+			needNewMesh = false;
 			hasMesh = true;
 
 			updateCallback ();
 		}
-
-		public float GetVertexHeight (int vertexIndex)
-		{
-			return mesh.vertices[vertexIndex].y;
-		}
-
+	
 		public void RequestMesh(MapData mapData) {
 			hasRequestedMesh = true;
 			mapGenerator.RequestMeshData (mapData, lod, OnMeshDataReceived);

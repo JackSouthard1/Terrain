@@ -4,8 +4,8 @@ using System.Collections;
 public static class MeshGenerator {
 	
 
-	public static MeshData GenerateTerrainMesh(float[,] heightMap, float heightMultiplier, AnimationCurve _heightCurve, int levelOfDetail, bool useFlatShading) {
-		AnimationCurve heightCurve = new AnimationCurve (_heightCurve.keys);
+	public static MeshData GenerateTerrainMesh(float[,] heightMap, int levelOfDetail, bool useFlatShading) {
+//		AnimationCurve heightCurve = new AnimationCurve (_heightCurve.keys);
 
 		int meshSimplificationIncrement = (levelOfDetail == 0)?1:levelOfDetail * 2;
 
@@ -43,7 +43,7 @@ public static class MeshGenerator {
 			for (int x = 0; x < borderedSize; x += meshSimplificationIncrement) {
 				int vertexIndex = vertexIndicesMap [x, y];
 				Vector2 percent = new Vector2 ((x-meshSimplificationIncrement) / (float)meshSize, (y-meshSimplificationIncrement) / (float)meshSize);
-				float height = heightMap [x, y] * heightMultiplier; //heightCurve.Evaluate (heightMap [x, y]) // TODO
+				float height = heightMap [x, y];
 				Vector3 vertexPosition = new Vector3 (topLeftX + percent.x * meshSizeUnsimplified, height, topLeftZ - percent.y * meshSizeUnsimplified);
 
 				meshData.AddVertex (vertexPosition, percent, vertexIndex);
