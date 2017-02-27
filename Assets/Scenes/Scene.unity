@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44819868, g: 0.49822015, b: 0.5755664, a: 1}
+  m_IndirectSpecularColor: {r: 0.44820172, g: 0.49822187, b: 0.57556814, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -534,7 +534,7 @@ Light:
   m_SpotAngle: 30
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -559,13 +559,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 962081135}
-  m_LocalRotation: {x: 0.37941256, y: -0.061106313, z: 0.1861515, w: 0.90424544}
+  m_LocalRotation: {x: 0.37078834, y: -0.23899032, z: 0.09935243, w: 0.8919242}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 45.143, y: 2.426, z: 24.113}
+  m_LocalEulerAnglesHint: {x: 45.147003, y: -30, z: 0}
 --- !u!1 &1008436972
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,7 +616,7 @@ MonoBehaviour:
   editorPreviewLOD: 0
   noiseScale: 48.68
   octaves: 8
-  persistance: 0.5
+  persistance: 0.55
   lacunarity: 2
   seed: 0
   offset: {x: 0, y: 0}
@@ -632,8 +632,14 @@ MonoBehaviour:
       outSlope: 0
       tangentMode: 0
     - serializedVersion: 2
+      time: 0.19915423
+      value: 0.029915143
+      inSlope: 0.091928646
+      outSlope: 0.091928646
+      tangentMode: 0
+    - serializedVersion: 2
       time: 0.4152808
-      value: 0.056736305
+      value: 0.08527482
       inSlope: 0.20722614
       outSlope: 0.20722614
       tangentMode: 0
@@ -662,28 +668,25 @@ MonoBehaviour:
   regions:
   - name: Water Deep
     height: -1
-    colour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
+    colour: {r: 0.22610293, g: 0.46784824, b: 0.60294116, a: 1}
   - name: Water Shallow
-    height: 0
-    colour: {r: 0.20784314, g: 0.54509807, b: 0.7294118, a: 1}
-  - name: Sand
-    height: 0.02
-    colour: {r: 0.9647059, g: 0.9529412, b: 0.5254902, a: 0}
-  - name: Grass
-    height: 0.07
+    height: 0.05
+    colour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
+  - name: Grass 1
+    height: 0.3
     colour: {r: 0.4, g: 0.58431375, b: 0.078431375, a: 1}
   - name: Grass 2
-    height: 0.3
-    colour: {r: 0.35686275, g: 0.5176471, b: 0.07058824, a: 1}
+    height: 0.5
+    colour: {r: 0.3647059, g: 0.53333336, b: 0.07450981, a: 1}
+  - name: Grass 3
+    height: 1
+    colour: {r: 0.32941177, g: 0.47843137, b: 0.06666667, a: 1}
   - name: Rock
-    height: 2
-    colour: {r: 0.32941177, g: 0.3137255, b: 0.22352941, a: 1}
-  - name: Rock 2
-    height: 6
-    colour: {r: 0.2627451, g: 0.2509804, b: 0.18039216, a: 1}
+    height: 3
+    colour: {r: 0.28676468, g: 0.20048639, b: 0.1222967, a: 1}
   - name: Snow
-    height: 15
-    colour: {r: 1, g: 1, b: 1, a: 0}
+    height: 14
+    colour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1008436975
 Transform:
   m_ObjectHideFlags: 0
@@ -814,7 +817,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1446297589}
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: 150, y: 50, z: -150}
+  m_LocalPosition: {x: 150, y: 100, z: -150}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
