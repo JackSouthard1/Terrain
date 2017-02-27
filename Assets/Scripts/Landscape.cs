@@ -21,9 +21,6 @@ public class Landscape : MonoBehaviour {
 		ScaleHeights();
 	}
 
-	void Start () {
-	}
-
 	public void FlattenTerrain (Vector2 bottomLeft, int size)
 	{
 		bottomLeft = new Vector2 (Mathf.RoundToInt (bottomLeft.x), -Mathf.RoundToInt (bottomLeft.y));
@@ -84,6 +81,12 @@ public class Landscape : MonoBehaviour {
 		}
 
 		return chunkHeights;
+	}
+
+	public float GetHeightOfPoint (Vector2 worldCoord)
+	{
+		worldCoord = new Vector2 (worldCoord.x, -worldCoord.y);
+		return heights[(int)worldCoord.x, (int)worldCoord.y];
 	}
 
 	Vector2 GetChunkCord (Vector2 point) {
