@@ -661,27 +661,18 @@ MonoBehaviour:
     m_RotationOrder: 0
   autoUpdate: 0
   regions:
-  - name: Water Deep
+  - name: a
     height: -1
-    colour: {r: 0.22210206, g: 0.45226303, b: 0.5808823, a: 1}
-  - name: Water Shallow
-    height: 0.02
-    colour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
-  - name: Grass 1
-    height: 0.1
-    colour: {r: 0.4, g: 0.58431375, b: 0.078431375, a: 1}
-  - name: Grass 2
-    height: 0.5
-    colour: {r: 0.3647059, g: 0.53333336, b: 0.07450981, a: 1}
-  - name: Grass 3
-    height: 1
-    colour: {r: 0.32941177, g: 0.47843137, b: 0.06666667, a: 1}
-  - name: Rock
-    height: 5
-    colour: {r: 0.28676468, g: 0.20048639, b: 0.1222967, a: 1}
-  - name: Snow
-    height: 25
-    colour: {r: 1, g: 1, b: 1, a: 1}
+    moistColour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
+    dryColour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
+  - name: a
+    height: 0.3
+    moistColour: {r: 0.30053008, g: 0.44117647, b: 0.05514706, a: 1}
+    dryColour: {r: 0.9117647, g: 0.7352375, b: 0.35532007, a: 1}
+  - name: a
+    height: 10
+    moistColour: {r: 0.29803923, g: 0.28235295, b: 0.2, a: 1}
+    dryColour: {r: 0.29803923, g: 0.28235295, b: 0.2, a: 1}
 --- !u!4 &1008436975
 Transform:
   m_ObjectHideFlags: 0
@@ -741,8 +732,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa6d19bcd84e44856a1fc3bf9cabd6cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moistureCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+    - serializedVersion: 2
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
   seed: 0
-  noiseScale: 500
+  noiseScale: 300
   octaves: 1
   persistance: 0.5
   lacunarity: 2
