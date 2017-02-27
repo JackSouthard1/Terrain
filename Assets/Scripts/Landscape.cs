@@ -5,6 +5,7 @@ using UnityEngine;
 public class Landscape : MonoBehaviour {
 
 	MapGenerator mapGen;
+	Biomes biomes;
 	EndlessTerrain endlessTerrainScript;
 
 	public int mapSize;
@@ -13,12 +14,17 @@ public class Landscape : MonoBehaviour {
 	// the height of each vertex in the landscape
 	float[,] heights;
 
+	// the moisture from 0 to 1 of each height
+	float [,] moisture;
+
 	void Awake () {
 		mapGen = GameObject.Find("Map Generator").GetComponent<MapGenerator>();
+		biomes = FindObjectOfType<Biomes>();
 		endlessTerrainScript = GameObject.Find("Map Generator").GetComponent<EndlessTerrain>();
 		chunkSize = MapGenerator.mapChunkSize;
 		heights = Noise.GenerateNoiseMap (chunkSize * mapSize, chunkSize * mapSize, mapGen.seed, mapGen.noiseScale, mapGen.octaves, mapGen.persistance, mapGen.lacunarity, Vector2.zero + mapGen.offset, mapGen.normalizeMode);
 		ScaleHeights();
+		moisture = biomes.GenerateMoisture();
 	}
 
 	public void FlattenTerrain (Vector2 bottomLeft, int size)
@@ -81,6 +87,19 @@ public class Landscape : MonoBehaviour {
 		}
 
 		return chunkHeights;
+	}
+
+	public float[,] GetMoistureValuesInChunk (Vector2 center) {
+		int size = chunkSize + 2;
+		float[,] moistureValues = new float[size, size];
+
+		for (int y = 0; y < size; y++) {
+			for (int x = 0; x < size; x++) {
+				moistureValues [x, y] = moisture[x + Mathf.RoundToInt(center.x), y - Mathf.RoundToInt(center.y)];
+			}
+		}
+
+		return moistureValues;
 	}
 
 	public float GetHeightOfPoint (Vector2 worldCoord)

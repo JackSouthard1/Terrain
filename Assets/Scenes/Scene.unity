@@ -578,6 +578,7 @@ GameObject:
   - component: {fileID: 1008436973}
   - component: {fileID: 1008436976}
   - component: {fileID: 1008436977}
+  - component: {fileID: 1008436978}
   m_Layer: 0
   m_Name: Map Generator
   m_TagString: Untagged
@@ -614,14 +615,14 @@ MonoBehaviour:
   normalizeMode: 1
   useFlatShading: 1
   editorPreviewLOD: 0
-  noiseScale: 48.68
+  noiseScale: 150
   octaves: 8
   persistance: 0.55
   lacunarity: 2
   seed: 0
   offset: {x: 0, y: 0}
   useFalloff: 0
-  meshHeightMultiplier: 40
+  meshHeightMultiplier: 60
   meshHeightCurve:
     serializedVersion: 2
     m_Curve:
@@ -644,22 +645,16 @@ MonoBehaviour:
       outSlope: 0.20722614
       tangentMode: 0
     - serializedVersion: 2
-      time: 0.7662427
-      value: 0.33839977
-      inSlope: 1.6567111
-      outSlope: 1.6567111
-      tangentMode: 0
-    - serializedVersion: 2
-      time: 0.9544917
-      value: 0.8052091
-      inSlope: 2.2321959
-      outSlope: 2.2321959
+      time: 0.9006129
+      value: 0.45255384
+      inSlope: 1.4426478
+      outSlope: 1.4426478
       tangentMode: 0
     - serializedVersion: 2
       time: 1.1120291
       value: 1.1415408
-      inSlope: 4.409152
-      outSlope: 4.409152
+      inSlope: 4.908135
+      outSlope: 4.908135
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -668,12 +663,12 @@ MonoBehaviour:
   regions:
   - name: Water Deep
     height: -1
-    colour: {r: 0.22610293, g: 0.46784824, b: 0.60294116, a: 1}
+    colour: {r: 0.22210206, g: 0.45226303, b: 0.5808823, a: 1}
   - name: Water Shallow
-    height: 0.05
+    height: 0.02
     colour: {r: 0.18039216, g: 0.4745098, b: 0.6392157, a: 1}
   - name: Grass 1
-    height: 0.3
+    height: 0.1
     colour: {r: 0.4, g: 0.58431375, b: 0.078431375, a: 1}
   - name: Grass 2
     height: 0.5
@@ -682,10 +677,10 @@ MonoBehaviour:
     height: 1
     colour: {r: 0.32941177, g: 0.47843137, b: 0.06666667, a: 1}
   - name: Rock
-    height: 3
+    height: 5
     colour: {r: 0.28676468, g: 0.20048639, b: 0.1222967, a: 1}
   - name: Snow
-    height: 14
+    height: 25
     colour: {r: 1, g: 1, b: 1, a: 1}
 --- !u!4 &1008436975
 Transform:
@@ -735,6 +730,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapSize: 10
+--- !u!114 &1008436978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1008436972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa6d19bcd84e44856a1fc3bf9cabd6cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seed: 0
+  noiseScale: 500
+  octaves: 1
+  persistance: 0.5
+  lacunarity: 2
 --- !u!1 &1446297589
 GameObject:
   m_ObjectHideFlags: 0

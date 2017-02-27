@@ -33,6 +33,7 @@ public class MapGenerator : MonoBehaviour {
 	public bool autoUpdate;
 
 	public TerrainType[] regions;
+
 	static MapGenerator instance;
 
 	float[,] falloffMap;
@@ -130,6 +131,7 @@ public class MapGenerator : MonoBehaviour {
 	MapData GenerateMapData (Vector2 center)
 	{
 		float[,] noiseMap = landscape.GetHeightsInChunk(center);
+		float[,] moistureMap = landscape.GetMoistureValuesInChunk(center);
 
 		Color[] colourMap = new Color[mapChunkSize * mapChunkSize];
 		for (int y = 0; y < mapChunkSize; y++) {
@@ -137,10 +139,14 @@ public class MapGenerator : MonoBehaviour {
 				if (useFalloff) {
 					noiseMap [x, y] = Mathf.Clamp01(noiseMap [x, y] - falloffMap [x, y]);
 				}
-				float currentHeight = noiseMap [x, y];
+
+				float currentHeight 	= noiseMap 		[x, y];
+				float currentMoisture 	= moistureMap 	[x, y];
+
 				for (int i = 0; i < regions.Length; i++) {
 					if (currentHeight >= regions [i].height) {
-						colourMap [y * mapChunkSize + x] = regions [i].colour;
+						Color lerpedColor = Color.Lerp(regions [i].dryColour, regions [i].moistColour, currentMoisture);
+						colourMap [y * mapChunkSize + x] = lerpedColor;
 					} else {
 						break;
 					}
@@ -181,7 +187,8 @@ public class MapGenerator : MonoBehaviour {
 public struct TerrainType {
 	public string name;
 	public float height;
-	public Color colour;
+	public Color moistColour;
+	public Color dryColour;
 }
 
 public struct MapData {

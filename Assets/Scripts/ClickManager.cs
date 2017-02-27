@@ -23,7 +23,7 @@ public class ClickManager : MonoBehaviour {
 			RaycastHit hit; 
 
 			if (Physics.Raycast (ray, out hit)) {
-				placementManager.PlaceObject(new Vector2((int)hit.point.x, (int)hit.point.z));
+				placementManager.PlaceBuilding(new Vector2((int)hit.point.x, (int)hit.point.z));
 			}
 		}
 	}

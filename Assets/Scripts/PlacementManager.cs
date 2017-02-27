@@ -29,7 +29,7 @@ public class PlacementManager : MonoBehaviour {
 		}
 	}
 
-	public void PlaceObject (Vector2 worldCoord) {
+	public void PlaceBuilding (Vector2 worldCoord) {
 		landscape.FlattenTerrain(worldCoord, building.size);
 
 		float height = landscape.GetHeightOfPoint(worldCoord);
@@ -37,6 +37,13 @@ public class PlacementManager : MonoBehaviour {
 
 		GameObject.Instantiate(building.go, pos, Quaternion.identity, transform);
 	}
+
+//	public void PlaceTree (Vector2 worldCoord) {
+//		float height = landscape.GetHeightOfPoint(worldCoord);
+//
+//		Vector3 pos = new Vector3(worldCoord.x, height, worldCoord.y);
+//		GameObject.Instantiate(building.go, pos, Quaternion.identity, transform);
+//	}
 }
 
 public class Building {
